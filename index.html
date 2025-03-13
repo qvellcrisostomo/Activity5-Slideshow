@@ -5,103 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slideshow</title>
     <style>
-* {
-  box-sizing: border-box;
-}
+        * { box-sizing: border-box; }
+        body { font-family: Verdana, sans-serif; margin: 0; background-color: #f4f4f4; }
 
-body {
-  font-family: Verdana, sans-serif;
-  margin: 0;
-  background-color: #f4f4f4;
-}
+        .slideshow-container {
+            max-width: 1000px;
+            position: relative;
+            margin: auto;
+            padding: 10px;
+            text-align: center;
+        }
 
-.mySlides {
-  display: none;
-}
+        .mySlides { display: none; }
+        img { max-width: 100%; height: auto; border-radius: 10px; vertical-align: middle; }
 
-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  vertical-align: middle;
-}
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            padding: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            user-select: none;
+            transition: 0.3s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.slideshow-container {
-  max-width: 1000px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin: auto;
-  padding: 10px;
-}
+        .prev { left: 10px; }
+        .next { right: 10px; }
 
-.prev, .next {
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: auto;
-  padding: 12px;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  user-select: none;
-  transition: 0.3s;
-}
+        .prev:hover, .next:hover { background: rgba(0, 0, 0, 0.8); }
 
-.prev { left: 10px; }
-.next { right: 10px; }
+        .text {
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
 
-.prev:hover, .next:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
+        .dot-container { text-align: center; padding: 10px; }
 
-.text {
-  color: #fff;
-  font-size: 16px;
-  text-align: center;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
 
-.dot {
-  cursor: pointer;
-  height: 12px;
-  width: 12px;
-  margin: 5px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-}
-
-.active, .dot:hover {
-  background-color: #717171;
-}
-
+        .active, .dot:hover { background-color: #717171; }
     </style>
 </head>
 <body>
 
-    <div class="slideshow-container" id="slideshow"></div>
+    <div class="slideshow-container" id="slideshow">
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    </div>
 
-    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    <div class="dot-container" id="dots"></div>
 
     <script>
         let slideIndex = 0;
         let slides = [];
+        let dots = [];
 
         function loadXML() {
-           fetch("https://raw.githubusercontent.com/qvellcrisostomo/Activity5-Slideshow/main/Activity5_Crisostomo.xml")
+            fetch("https://raw.githubusercontent.com/qvellcrisostomo/Activity5-Slideshow/main/Activity5_Crisostomo.xml")
                 .then(response => response.text()) 
                 .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
                 .then(parseXML)
@@ -116,8 +104,12 @@ img {
 
             let slideElements = xml.getElementsByTagName("slide");
             let slideshowContainer = document.getElementById("slideshow");
+            let dotsContainer = document.getElementById("dots");
 
-            slideshowContainer.innerHTML = ""; 
+            slideshowContainer.innerHTML = `<a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+                                            <a class="next" onclick="changeSlide(1)">&#10095;</a>`; 
+            dotsContainer.innerHTML = "";
+
             for (let i = 0; i < slideElements.length; i++) {
                 let image = slideElements[i].getElementsByTagName("image")[0]?.textContent.trim();
                 let text = slideElements[i].getElementsByTagName("text")[0]?.textContent.trim();
@@ -133,12 +125,6 @@ img {
                 let imgElement = document.createElement("img");
                 imgElement.src = image;
                 imgElement.crossOrigin = "anonymous"; 
-                imgElement.onload = function () {
-                    console.log("Image loaded successfully:", imgElement.src);
-                };
-                imgElement.onerror = function () {
-                    console.error("Failed to load image:", imgElement.src);
-                };
 
                 let textDiv = document.createElement("div");
                 textDiv.classList.add("text");
@@ -147,9 +133,15 @@ img {
                 slideDiv.appendChild(imgElement);
                 slideDiv.appendChild(textDiv);
                 slideshowContainer.appendChild(slideDiv);
+
+                let dot = document.createElement("span");
+                dot.classList.add("dot");
+                dot.setAttribute("onclick", `currentSlide(${i})`);
+                dotsContainer.appendChild(dot);
             }
 
             slides = document.getElementsByClassName("mySlides");
+            dots = document.getElementsByClassName("dot");
 
             if (slides.length > 0) {
                 showSlides(slideIndex);
@@ -162,15 +154,21 @@ img {
             if (n >= slides.length) { slideIndex = 0; }
             if (n < 0) { slideIndex = slides.length - 1; }
 
-            for (let slide of slides) {
-                slide.style.display = "none";
-            }
+            for (let slide of slides) { slide.style.display = "none"; }
+            for (let dot of dots) { dot.classList.remove("active"); }
 
             slides[slideIndex].style.display = "block";
+            dots[slideIndex].classList.add("active");
         }
 
         function changeSlide(n) {
-            showSlides(slideIndex += n);
+            slideIndex += n;
+            showSlides(slideIndex);
+        }
+
+        function currentSlide(n) {
+            slideIndex = n;
+            showSlides(slideIndex);
         }
 
         document.addEventListener("DOMContentLoaded", loadXML);
