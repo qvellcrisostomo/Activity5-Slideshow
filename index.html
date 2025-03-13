@@ -65,7 +65,7 @@
         let slides = [];
 
         function loadXML() {
-            fetch("./Activity5_Crisostomo.xml")
+           fetch("https://raw.githubusercontent.com/qvellcrisostomo/repository/main/Activity5_Crisostomo.xml")
                 .then(response => response.text()) 
                 .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
                 .then(parseXML)
