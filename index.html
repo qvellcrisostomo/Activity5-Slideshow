@@ -112,7 +112,7 @@
 
             for (let i = 0; i < slideElements.length; i++) {
                 let image = slideElements[i].getElementsByTagName("image")[0]?.textContent.trim();
-                let text = slideElements[i].getElementsByTagName("text")[0]?.textContent.trim();
+                let text = slideElements[i].getElementsByTagName("text")[0]?.textContent.replace(/\s+/g, ' ').trim(); // Fix extra spaces
 
                 if (!image) {
                     console.error("Image path missing in slide:", i);
@@ -159,6 +159,10 @@
 
             slides[slideIndex].style.display = "block";
             dots[slideIndex].classList.add("active");
+
+            // Ensure navigation arrows are always visible
+            document.querySelector(".prev").style.display = "block";
+            document.querySelector(".next").style.display = "block";
         }
 
         function changeSlide(n) {
